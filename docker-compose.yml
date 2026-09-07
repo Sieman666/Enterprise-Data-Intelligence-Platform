@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: edip-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-enterprise_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-enterprise_password}
+      POSTGRES_DB: ${POSTGRES_DB:-enterprise_dw}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: edip-backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://enterprise_user:enterprise_password@postgres:5432/enterprise_dw}
+      READONLY_DATABASE_URL: ${READONLY_DATABASE_URL:-postgresql://enterprise_readonly:enterprise_readonly_password@postgres:5432/enterprise_dw}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      QUERY_TIMEOUT_MS: ${QUERY_TIMEOUT_MS:-10000}
+      MAX_QUERY_ROWS: ${MAX_QUERY_ROWS:-1000}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
