@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from app.core.config import settings
 from app.database.session import Base, engine
+from app.models import Customer, Order, Product, UserBehavior  # noqa: F401
 
 READONLY_USER = "enterprise_readonly"
 
