@@ -42,6 +42,7 @@ jobs:
         run: python data/sample/generate_sample_data.py
 
       - name: Initialize database
+        working-directory: backend
         env:
           DATABASE_URL: postgresql://enterprise_user:enterprise_password@localhost:5432/enterprise_dw
           READONLY_DATABASE_URL: postgresql://enterprise_readonly:enterprise_readonly_password@localhost:5432/enterprise_dw
