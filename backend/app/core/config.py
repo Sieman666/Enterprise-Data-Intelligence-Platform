@@ -1,12 +1,14 @@
 import os
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 
 load_dotenv()
 
 
 class Settings(BaseModel):
+    model_config = ConfigDict(validate_default=True)
+
     database_url: str = os.getenv(
         "DATABASE_URL",
         "postgresql://enterprise_user:enterprise_password@localhost:5432/enterprise_dw",
@@ -23,6 +25,13 @@ class Settings(BaseModel):
     )
     query_timeout_ms: int = int(os.getenv("QUERY_TIMEOUT_MS", "10000"))
     max_query_rows: int = int(os.getenv("MAX_QUERY_ROWS", "1000"))
+
+    @field_validator("database_url", "readonly_database_url")
+    @classmethod
+    def use_installed_postgres_driver(cls, url: str) -> str:
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        return url
 
 
 settings = Settings()
