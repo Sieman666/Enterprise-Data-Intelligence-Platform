@@ -1,6 +1,5 @@
-from sqlalchemy import create_engine
-
 from app.core.config import Settings
+from sqlalchemy import create_engine
 
 
 def test_postgres_urls_use_installed_psycopg2_driver():
